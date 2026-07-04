@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build AeroInference",
+      "type": "shell",
+      "command": "D:/Documents/Hassaan/1st_Semester/mingw64/bin/g++.exe",
+      "args": [
+        "-std=gnu++17",
+        "-g",
+        "-Wall",
+        "-I", "${workspaceFolder}/core/include",
+        "-I", "${workspaceFolder}/compiler/include",
+        "-I", "${workspaceFolder}/gui/include",
+        "-I", "${workspaceFolder}/third_party/imgui",
+        "-I", "${workspaceFolder}/third_party/imgui/backends",
+        "-I", "D:/Documents/Hassaan/1st_Semester/mingw64/include",
+        "${workspaceFolder}/gui/src/main.cpp",
+        "${workspaceFolder}/gui/src/DashboardApp.cpp",
+        "${workspaceFolder}/gui/src/MainWindow.cpp",
+        "${workspaceFolder}/core/src/Network.cpp",
+        "${workspaceFolder}/core/src/MathBackend.cpp",
+        "${workspaceFolder}/compiler/src/JsonParser.cpp",
+        "${workspaceFolder}/compiler/src/Quantizer.cpp",
+        "${workspaceFolder}/third_party/imgui/imgui.cpp",
+        "${workspaceFolder}/third_party/imgui/imgui_draw.cpp",
+        "${workspaceFolder}/third_party/imgui/imgui_widgets.cpp",
+        "${workspaceFolder}/third_party/imgui/imgui_tables.cpp",
+        "${workspaceFolder}/third_party/imgui/backends/imgui_impl_glfw.cpp",
+        "${workspaceFolder}/third_party/imgui/backends/imgui_impl_opengl3.cpp",
+        "-L", "D:/Documents/Hassaan/1st_Semester/mingw64/lib",
+        "-lglfw3",
+        "-lopengl32",
+        "-lgdi32",
+        "-o", "${workspaceFolder}/build/AeroInference.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}

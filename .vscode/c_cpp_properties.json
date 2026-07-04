@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/core/include",
+        "${workspaceFolder}/core/include/layers",
+        "${workspaceFolder}/compiler/include",
+        "${workspaceFolder}/gui/include",
+        "${workspaceFolder}/third_party/imgui",
+        "${workspaceFolder}/third_party/imgui/backends",
+        "D:/Documents/Hassaan/1st_Semester/mingw64/include"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "compilerPath": "D:/Documents/Hassaan/1st_Semester/mingw64/bin/g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "windows-gcc-x64"
+    }
+  ],
+  "version": 4
+}
