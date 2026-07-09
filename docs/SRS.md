@@ -81,7 +81,7 @@ Primary user: a developer/engineer integrating or testing a TinyML model, comfor
 | FR-9 | Core execution-path functions shall not throw uncaught C++ exceptions (embedded-safety requirement). | Partially implemented — JSON parsing hardened; not yet audited across all modules |
 | FR-10 | The system shall support post-training quantization of model weights from FP32 to INT8. | Interface defined only; logic not yet implemented/verified |
 | FR-11 | The system shall support execution on an embedded microcontroller target (not just desktop). | Not started |
-| FR-12 | The system shall provide an automated test suite validating math kernel correctness against known reference values. | Not started |
+| FR-12 | The system shall provide an automated test suite validating math kernel correctness against known reference values. | Implemented — 12/12 tests passing (math kernels, Tensor, Network integration) |
 
 ### 3.2 Non-Functional Requirements
 
@@ -91,7 +91,7 @@ Primary user: a developer/engineer integrating or testing a TinyML model, comfor
 | NFR-2 | Reliability | The application shall not crash (unhandled exception/termination) on malformed input files. | Partially met — one known crash class fixed; full audit pending |
 | NFR-3 | Portability | Core engine (`core/`, `compiler/`) shall have no dependency on the GUI layer, to allow future embedded builds without GUI code. | Implemented (verified by folder/module separation) |
 | NFR-4 | Maintainability | Codebase shall use consistent, documented interfaces (`ILayer`, `ModelParser`) for extensibility. | Implemented |
-| NFR-5 | Testability | Critical math functions shall be independently unit-testable. | Not yet exercised — no tests written |
+| NFR-5 | Testability | Critical math functions shall be independently unit-testable. | Implemented — 12/12 tests passing across math kernels, Tensor, and Network integration |
 | NFR-6 | Security | Model files shall not be able to trigger out-of-bounds memory access via malformed dimension data. | Needs verification — not yet fuzz-tested |
 
 ### 3.3 External Interface Requirements
