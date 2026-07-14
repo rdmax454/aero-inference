@@ -15,6 +15,7 @@ class Network {
 private:
     std::vector<std::unique_ptr<ILayer>> m_layers;
     std::vector<Tensor> m_intermediary_buffers; // Reusable internal memory allocations
+    std::vector<std::vector<size_t>> m_layer_output_shapes; // Real output shape per layer, from compile()
     bool m_is_compiled{false};
 
 public:
@@ -68,6 +69,7 @@ public:
     void clear() noexcept {
         m_layers.clear();
         m_intermediary_buffers.clear();
+        m_layer_output_shapes.clear();
         m_is_compiled = false;
     }
 
