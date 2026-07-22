@@ -1,0 +1,26 @@
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up MinGW
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-glfw
+      - name: Build math tests
+        shell: msys2 {0}
+        run: g++ -std=gnu++17 -I core/include tests/test_math.cpp core/src/MathBackend.cpp -o test_math.exe
+      - name: Run math tests
+        shell: msys2 {0}
+        run: ./test_math.exe
+      - name: Build network tests
+        shell: msys2 {0}
+        run: g++ -std=gnu++17 -I core/include tests/test_network.cpp core/src/Network.cpp core/src/MathBackend.cpp -o test_network.exe
+      - name: Run network tests
+        shell: msys2 {0}
+        run: ./test_network.exe
