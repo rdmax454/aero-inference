@@ -1,14 +1,12 @@
 name: Build and Test
-
 on: [push, pull_request]
-
 jobs:
   tests:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             shell: bash
           - os: windows-latest
             shell: 'msys2 {0}'
@@ -17,32 +15,55 @@ jobs:
       run:
         shell: ${{ matrix.shell }}
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v5
       - name: Set up MSYS2 (Windows only)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
-          install: mingw-w64-x86_64-gcc
-
+          msystem: UCRT64
+          install: mingw-w64-ucrt-x86_64-gcc
       - name: Build and run all tests
         run: |
           set -e
           mkdir -p build
           FLAGS="-std=gnu++17 -Wall -Wextra -I core/include -I compiler/include"
-
-          run_test() {
-            name=$1
-            shift
-            echo "=== $name"
-            g++ $FLAGS "tests/$name.cpp" "$@" -o "build/$name"
-            "./build/$name"
-          }
-
+          run_test() { name=$1; shift; echo "=== $name"; g++ $FLAGS "tests/$name.cpp" "$@" -o "build/$name"; "./build/$name"; }
           run_test test_math core/src/MathBackend.cpp
           run_test test_tensor
           run_test test_network core/src/Network.cpp core/src/MathBackend.cpp
           run_test test_quantizer compiler/src/Quantizer.cpp
           run_test test_mnist_inference core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp
           run_test test_mnist_batch_accuracy core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp
+
+  sanitizers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run all tests with ASan + UBSan (-O1)
+        run: |
+          set -e
+          mkdir -p build
+          FLAGS="-std=gnu++17 -Wall -Wextra -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -I core/include -I compiler/include"
+          run_test() { name=$1; shift; echo "=== $name"; g++ $FLAGS "tests/$name.cpp" "$@" -o "build/$name"; "./build/$name"; }
+          run_test test_math core/src/MathBackend.cpp
+          run_test test_tensor
+          run_test test_network core/src/Network.cpp core/src/MathBackend.cpp
+          run_test test_quantizer compiler/src/Quantizer.cpp
+          run_test test_mnist_inference core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp
+          run_test test_mnist_batch_accuracy core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp
+
+  arm-cross-compile:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install ARM toolchain
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
+      - name: Cross-compile engine core for Cortex-M4 and report size
+        run: |
+          set -e
+          mkdir -p build/arm
+          FLAGS="-std=gnu++17 -Os -Wall -Wextra -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I core/include -I compiler/include"
+          for f in core/src/MathBackend.cpp core/src/Network.cpp compiler/src/Quantizer.cpp; do
+            arm-none-eabi-g++ $FLAGS -c "$f" -o "build/arm/$(basename "$f" .cpp).o"
+          done
+          arm-none-eabi-size build/arm/*.o
