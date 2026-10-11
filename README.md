@@ -57,7 +57,8 @@ aero-inference/
 │   ├── test_tensor.cpp
 │   ├── test_network.cpp
 │   ├── test_mnist_inference.cpp
-│   └── test_mnist_batch_accuracy.cpp
+│   ├── test_mnist_batch_accuracy.cpp
+|   └── test_quantizer.cpp
 ├── docs/
 │   └── SRS.md               # Software Requirements Specification
 └── build/                   # Build output (gitignored)
@@ -84,10 +85,10 @@ g++ -std=gnu++17 -I core/include -I compiler/include tests/test_mnist_batch_accu
 | MathBackend (FC, ReLU, Conv2D) | Implemented, verified on a trained model |
 | Network compile/forward | Implemented, buffer-reuse bug fixed and tested |
 | JsonParser | Implemented, numeric-field crash risk fixed |
-| Quantizer | Interface only, unverified |
+| Quantizer | Implemented (fake-quantization simulation), tested |
 | GUI load/run | Implemented |
 | Automated tests | Implemented (12 unit/integration tests, 2 MNIST tests) |
 | Trained model verification | Done (MNIST, 94% on 100 samples) |
-| CI | Workflow configured; math and network suites only |
+| CI |All six test programs, on Ubuntu and Windows |
 | SIMD optimization | Not implemented |
 | Embedded target | Not attempted |
