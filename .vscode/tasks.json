@@ -8,7 +8,7 @@
       "args": [
         "-std=gnu++17",
         "-g",
-        "-Wall",
+        "-Wall","-O2",
         "-I", "${workspaceFolder}/core/include",
         "-I", "${workspaceFolder}/compiler/include",
         "-I", "${workspaceFolder}/gui/include",
