@@ -3,24 +3,46 @@ name: Build and Test
 on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: windows-latest
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            shell: bash
+          - os: windows-latest
+            shell: 'msys2 {0}'
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up MinGW
+
+      - name: Set up MSYS2 (Windows only)
+        if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-glfw
-      - name: Build math tests
-        shell: msys2 {0}
-        run: g++ -std=gnu++17 -I core/include tests/test_math.cpp core/src/MathBackend.cpp -o test_math.exe
-      - name: Run math tests
-        shell: msys2 {0}
-        run: ./test_math.exe
-      - name: Build network tests
-        shell: msys2 {0}
-        run: g++ -std=gnu++17 -I core/include tests/test_network.cpp core/src/Network.cpp core/src/MathBackend.cpp -o test_network.exe
-      - name: Run network tests
-        shell: msys2 {0}
-        run: ./test_network.exe
+          install: mingw-w64-x86_64-gcc
+
+      - name: Build and run all tests
+        run: |
+          set -e
+          mkdir -p build
+          FLAGS="-std=gnu++17 -Wall -Wextra -I core/include -I compiler/include"
+
+          run_test() {
+            name=$1
+            shift
+            echo "=== $name"
+            g++ $FLAGS "tests/$name.cpp" "$@" -o "build/$name"
+            "./build/$name"
+          }
+
+          run_test test_math core/src/MathBackend.cpp
+          run_test test_tensor
+          run_test test_network core/src/Network.cpp core/src/MathBackend.cpp
+          run_test test_quantizer compiler/src/Quantizer.cpp
+          run_test test_mnist_inference core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp
+          run_test test_mnist_batch_accuracy core/src/Network.cpp core/src/MathBackend.cpp compiler/src/JsonParser.cpp

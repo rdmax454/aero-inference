@@ -101,5 +101,5 @@ int main() {
                << (100.0 * correct / count) << "%\n";
     std::cout << "(" << correct << " / " << count << " correct)\n";
 
-    return 0;
+        return (100.0 * correct / count >= 90.0) ? 0 : 1;
 }
